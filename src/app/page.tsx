@@ -45,6 +45,34 @@ const formatPhoneNumber = (phone: string | number): string => {
   return `(${areaCode})-${firstPart}-${secondPart}`;
 };
 
+function SpecialtiesList({ specialties }: { specialties: string[] }) {
+  const [expanded, setExpanded] = useState(false);
+  const sortedSpecialties = [...specialties].sort((a, b) => a.localeCompare(b));
+  const visibleSpecialties = expanded ? sortedSpecialties : sortedSpecialties.slice(0, 5);
+
+  return (
+    <div>
+      <ul className="list-disc pl-4 space-y-1">
+        {visibleSpecialties.map((s, index) => (
+          <li key={index} className="bg-gray-100 px-1 rounded-sm">
+            {s}
+          </li>
+        ))}
+      </ul>
+      {sortedSpecialties.length > 5 && (
+        <div className="mt-1 text-center">
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="text-[#3D5C50] hover:underline text-xs font-semibold"
+          >
+            {expanded ? "▲ Show less" : "▼ Show more"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Home() {
   const [advocates, setAdvocates] = useState<Advocate[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -118,15 +146,7 @@ export default function Home() {
                     <td className="px-4 py-2 whitespace-nowrap text-gray-900">{advocate.city}</td>
                     <td className="px-4 py-2 whitespace-nowrap text-gray-900">{advocate.degree}</td>
                     <td className="px-4 py-2 whitespace-normal">
-                      <ul className="list-disc pl-4 space-y-1">
-                        {[...advocate.specialties]
-                          .sort((a, b) => a.localeCompare(b))
-                          .map((s, index) => (
-                            <li key={index} className="bg-gray-100 px-1 rounded-sm">
-                              {s}
-                            </li>
-                          ))}
-                      </ul>
+                      <SpecialtiesList specialties={advocate.specialties} />
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap text-gray-900">{advocate.yearsOfExperience}</td>
                     <td className="px-4 py-2 whitespace-nowrap text-gray-900">
