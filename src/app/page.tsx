@@ -13,9 +13,17 @@ interface Advocate {
   phoneNumber: string | number;
 }
 
+const sortAdvocatesByName = (advocates: Advocate[]): Advocate[] => {
+  return [...advocates].sort((a, b) => {
+    const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+    const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+    return nameA.localeCompare(nameB);
+  });
+};
+
 const filterAdvocatesList = (advocates: Advocate[], searchTerm: string): Advocate[] => {
   const lowerSearchTerm = searchTerm.toLowerCase();
-  return advocates.filter((advocate) => {
+  const filtered = advocates.filter((advocate) => {
     return (
       `${advocate.firstName} ${advocate.lastName}`.toLowerCase().includes(lowerSearchTerm) ||
       advocate.city.toLowerCase().includes(lowerSearchTerm) ||
@@ -24,6 +32,7 @@ const filterAdvocatesList = (advocates: Advocate[], searchTerm: string): Advocat
       String(advocate.yearsOfExperience).toLowerCase().includes(lowerSearchTerm)
     );
   });
+  return sortAdvocatesByName(filtered);
 };
 
 const formatPhoneNumber = (phone: string | number): string => {
@@ -44,7 +53,7 @@ export default function Home() {
     fetch("/api/advocates")
       .then((response) => response.json())
       .then((jsonResponse) => {
-        setAdvocates(jsonResponse.data);
+        setAdvocates(sortAdvocatesByName(jsonResponse.data));
       });
   }, []);
 
@@ -78,7 +87,7 @@ export default function Home() {
                 value={searchTerm}
                 onChange={handleSearchChange}
                 placeholder="Search by name, city, or degree..."
-                className="block w-full md:w-80 rounded-md border-gray-300 shadow-xl focus:border-[#3D5C50] focus:ring-[#3D5C50] px-3 py-2 placeholder:text-sm h-10"
+                className="block w-full md:w-80 rounded-md border-gray-300 shadow-xl focus:outline-none focus:border-[#3D5C50] focus:ring-2 focus:ring-[#3D5C50] px-3 py-2 placeholder:text-sm h-10"
               />
               <button
                 onClick={handleResetSearch}
@@ -110,11 +119,13 @@ export default function Home() {
                     <td className="px-4 py-2 whitespace-nowrap text-gray-900">{advocate.degree}</td>
                     <td className="px-4 py-2 whitespace-normal">
                       <ul className="list-disc pl-4 space-y-1">
-                        {advocate.specialties.map((s, index) => (
-                          <li key={index} className="bg-gray-100 px-1 rounded-sm">
-                            {s}
-                          </li>
-                        ))}
+                        {[...advocate.specialties]
+                          .sort((a, b) => a.localeCompare(b))
+                          .map((s, index) => (
+                            <li key={index} className="bg-gray-100 px-1 rounded-sm">
+                              {s}
+                            </li>
+                          ))}
                       </ul>
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap text-gray-900">{advocate.yearsOfExperience}</td>
