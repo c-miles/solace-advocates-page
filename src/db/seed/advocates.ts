@@ -37,7 +37,7 @@ const randomSpecialty = () => {
   return [random1, random2];
 };
 
-const advocateData = [
+const rawAdvocateData = [
   {
     firstName: "John",
     lastName: "Doe",
@@ -174,5 +174,10 @@ const advocateData = [
     phoneNumber: 5559872345,
   },
 ];
+
+const advocateData = rawAdvocateData.map((advocate, index) => ({
+  id: `adv-${index + 1}`,
+  ...advocate,
+}));
 
 export { advocateData };
